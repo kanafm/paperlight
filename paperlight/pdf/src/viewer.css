@@ -1,0 +1,23 @@
+:root { color-scheme: light dark; }
+body { display: flex; flex-direction: column; height: 100vh; margin: 0; padding: 0; overflow: hidden; color: var(--vscode-foreground); background: var(--vscode-editor-background); font: var(--vscode-font-size) var(--vscode-font-family); }
+#toolbar { flex: 0 0 auto; display: flex; align-items: center; flex-wrap: wrap; gap: 16px; padding: 4px 12px; min-height: 28px; background: var(--vscode-editorWidget-background); }
+.controls { display: flex; align-items: center; gap: 4px; }
+button, input, select { box-sizing: border-box; font: inherit; color: inherit; border: 1px solid transparent; border-radius: var(--vscode-cornerRadius-small, 4px); height: 28px; }
+button { min-width: 28px; padding: 0 8px; background: transparent; cursor: pointer; }
+button:hover { background: var(--vscode-toolbar-hoverBackground); }
+button:disabled { opacity: 0.4; cursor: default; }
+button:focus-visible, input:focus, select:focus { outline: 1px solid var(--vscode-focusBorder); outline-offset: -1px; }
+input, select { background: var(--vscode-input-background); color: var(--vscode-input-foreground); border-color: var(--vscode-input-border, transparent); padding: 0 6px; }
+#page { width: 4.5em; text-align: center; appearance: textfield; }
+#page::-webkit-inner-spin-button { appearance: none; }
+#total { color: var(--vscode-descriptionForeground); white-space: nowrap; }
+#find { margin-left: auto; }
+#findbar { position: absolute; z-index: 10; top: 44px; right: 16px; display: flex; align-items: center; gap: 4px; max-width: calc(100% - 32px); padding: 8px; background: var(--vscode-editorWidget-background); border: 1px solid var(--vscode-widget-border, transparent); border-radius: var(--vscode-cornerRadius-large, 8px); box-shadow: 0 4px 12px var(--vscode-widget-shadow); }
+#query { width: 12em; min-width: 4em; }
+#matches { white-space: nowrap; color: var(--vscode-descriptionForeground); font-size: 11px; }
+#document { position: relative; flex: 1; min-height: 0; }
+#viewerContainer { position: absolute; inset: 0; overflow: auto; outline: none; }
+.pdfViewer { padding: 16px 0; }
+#message { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; background: var(--vscode-editor-background); color: var(--vscode-descriptionForeground); }
+[hidden] { display: none !important; }
+@media (max-width: 400px) { #toolbar { gap: 4px; padding-inline: 4px; } #findbar { right: 4px; max-width: calc(100% - 8px); padding: 4px; } #query { width: 8em; } }

@@ -1,4 +1,4 @@
-{ lib, stdenv, cctools, fetchurl, krb5, nodejs, python3, git, pkg-config, jq, unzip, sqlite, zstd, cacert, tools, src, pnpmDeps, languages, revision }:
+{ lib, stdenv, cctools, fetchurl, krb5, nodejs, python3, git, pkg-config, jq, unzip, sqlite, zstd, cacert, tools, src, pnpmDeps, languages, pdf, revision }:
 let
   electron = fetchurl {
     url = "https://github.com/electron/electron/releases/download/v43.8.3/electron-v43.8.3-darwin-arm64.zip";
@@ -97,7 +97,7 @@ stdenv.mkDerivation {
     substituteInPlace node_modules/@vscode/gulp-electron/src/download.js \
       --replace-fail 'downloadArtifact(downloadOpts)' 'Promise.resolve(process.env.PAPERLIGHT_ELECTRON_ARCHIVE)'
     jq --argjson extensions '${builtins.toJSON extensions}' --argjson defaults '${builtins.toJSON defaults}' \
-      '.configurationDefaults = $defaults | .builtInExtensions = $extensions | .nameShort = "Paperlight" | .nameLong = "Paperlight" | .applicationName = "paperlight" | .dataFolderName = ".paperlight" | .sharedDataFolderName = ".paperlight-shared" | .darwinBundleIdentifier = "org.paperlight.editor" | .urlProtocol = "paperlight"' \
+      '.configurationDefaults = $defaults | .useInMemorySecretStorage = true | .builtInExtensions = $extensions | .nameShort = "Paperlight" | .nameLong = "Paperlight" | .applicationName = "paperlight" | .dataFolderName = ".paperlight" | .sharedDataFolderName = ".paperlight-shared" | .darwinBundleIdentifier = "org.paperlight.editor" | .urlProtocol = "paperlight"' \
       product.json > product.json.tmp
     mv product.json.tmp product.json
     substituteInPlace build/lib/builtInExtensions.ts \
@@ -117,6 +117,7 @@ stdenv.mkDerivation {
     mkdir -p "$out/Applications"
     cp -R ../VSCode-darwin-arm64/Paperlight.app "$out/Applications/"
     cp -R ${languages} "$out/Applications/Paperlight.app/Contents/Resources/app/extensions/paperlight-languages"
+    cp -R ${pdf} "$out/Applications/Paperlight.app/Contents/Resources/app/extensions/paperlight-pdf"
     /usr/bin/codesign --force --deep --sign - "$out/Applications/Paperlight.app"
     /usr/bin/codesign --verify --deep --strict "$out/Applications/Paperlight.app"
     runHook postInstall

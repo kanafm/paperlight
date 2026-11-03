@@ -1,0 +1,24 @@
+{
+  "name": "paperlight-pdf",
+  "displayName": "Paperlight PDF",
+  "description": "Built-in PDF viewing for Paperlight.",
+  "publisher": "paperlight",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.16.0",
+  "engines": { "vscode": "^1.144.0" },
+  "main": "./dist/extension.cjs",
+  "capabilities": { "untrustedWorkspaces": { "supported": true }, "virtualWorkspaces": true },
+  "contributes": {
+    "customEditors": [{ "viewType": "paperlight.pdf", "displayName": "PDF Preview", "selector": [{ "filenamePattern": "*.pdf" }], "priority": "default" }]
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test test/*.test.ts"
+  },
+  "dependencies": { "pdfjs-dist": "6.5.438" },
+  "devDependencies": { "@types/node": "24.12.4", "@types/vscode": "1.144.0", "esbuild": "0.28.1", "typescript": "6.0.3" }
+}

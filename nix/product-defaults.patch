@@ -1,9 +1,10 @@
 --- a/src/vs/base/common/product.ts
 +++ b/src/vs/base/common/product.ts
-@@ -97,6 +97,7 @@
+@@ -97,6 +97,8 @@
  }
  
  export interface IProductConfiguration {
++	readonly useInMemorySecretStorage?: boolean;
 +	readonly configurationDefaults?: Record<string, unknown>;
  	readonly version: string;
  	readonly date?: string;
@@ -18,3 +19,8 @@
  
  export function validateProperty(property: string, schema: IRegisteredConfigurationPropertySchema, extensionId?: string): string | null {
  	if (!property.trim()) {
+--- a/src/vs/platform/environment/common/environmentService.ts
++++ b/src/vs/platform/environment/common/environmentService.ts
+@@ -264 +264 @@
+-	get useInMemorySecretStorage(): boolean { return !!this.args['use-inmemory-secretstorage']; }
++	get useInMemorySecretStorage(): boolean { return !!this.productService.useInMemorySecretStorage || !!this.args['use-inmemory-secretstorage']; }
