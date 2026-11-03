@@ -1,0 +1,47 @@
+{
+	"name": "paperlight-languages",
+	"displayName": "Paperlight Languages",
+	"description": "Project environments and language servers for Paperlight.",
+	"publisher": "paperlight",
+	"version": "0.1.0",
+	"license": "MIT",
+	"private": true,
+	"type": "module",
+	"packageManager": "pnpm@12.16.0",
+	"engines": { "vscode": "^1.144.0" },
+	"main": "./dist/extension.cjs",
+	"activationEvents": ["onStartupFinished"],
+	"capabilities": {
+		"untrustedWorkspaces": { "supported": "limited", "description": "Language servers and Nix evaluation require workspace trust." },
+		"virtualWorkspaces": false
+	},
+	"contributes": {
+		"views": { "explorer": [{ "id": "paperlight.tools", "name": "Project Tools" }] },
+		"viewsWelcome": [{ "view": "paperlight.tools", "contents": "Open a project folder to use project-specific language tools.", "when": "workspaceFolderCount == 0" }],
+		"commands": [
+			{ "command": "paperlight.tools.enable", "title": "Enable Language Server", "category": "Paperlight", "icon": "$(play)" },
+			{ "command": "paperlight.tools.disable", "title": "Disable Language Server", "category": "Paperlight", "icon": "$(debug-stop)" },
+			{ "command": "paperlight.tools.restart", "title": "Restart Language Server", "category": "Paperlight", "icon": "$(debug-restart)" },
+			{ "command": "paperlight.tools.refresh", "title": "Refresh Project Environment", "category": "Paperlight", "icon": "$(refresh)" },
+			{ "command": "paperlight.tools.logs", "title": "Show Language Server Log", "category": "Paperlight", "icon": "$(output)" }
+		],
+		"menus": {
+			"view/item/context": [
+				{ "command": "paperlight.tools.enable", "when": "view == paperlight.tools && viewItem =~ /^server:(disabled|idle|failed|missing)$/", "group": "inline@1" },
+				{ "command": "paperlight.tools.disable", "when": "view == paperlight.tools && viewItem =~ /^server:(starting|running|failed|missing)$/", "group": "inline@1" },
+				{ "command": "paperlight.tools.restart", "when": "view == paperlight.tools && viewItem == server:running", "group": "inline@2" },
+				{ "command": "paperlight.tools.refresh", "when": "view == paperlight.tools && viewItem == project", "group": "inline@1" },
+				{ "command": "paperlight.tools.logs", "when": "view == paperlight.tools && viewItem =~ /^server:/", "group": "navigation" }
+			]
+		}
+	},
+	"scripts": {
+		"build": "esbuild src/extension.ts --bundle --platform=node --target=node24 --format=cjs --external:vscode --outfile=dist/extension.cjs",
+		"typecheck": "tsc --noEmit",
+		"test": "node --test test/*.test.ts",
+		"test:nix": "node --test test/nix.integration.ts",
+		"build:integration": "esbuild test/editor.integration.ts --bundle --platform=node --target=node24 --format=cjs --external:vscode --outfile=dist/editor.integration.cjs"
+	},
+	"dependencies": { "vscode-languageclient": "10.1.1" },
+	"devDependencies": { "@types/node": "24.12.4", "@types/vscode": "1.144.0", "esbuild": "0.28.1", "typescript": "6.0.3" }
+}

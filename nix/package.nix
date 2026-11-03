@@ -1,4 +1,4 @@
-{ lib, stdenv, cctools, fetchurl, krb5, nodejs, python3, git, pkg-config, jq, unzip, sqlite, zstd, cacert, tools, src, pnpmDeps, revision }:
+{ lib, stdenv, cctools, fetchurl, krb5, nodejs, python3, git, pkg-config, jq, unzip, sqlite, zstd, cacert, tools, src, pnpmDeps, languages, revision }:
 let
   electron = fetchurl {
     url = "https://github.com/electron/electron/releases/download/v43.8.3/electron-v43.8.3-darwin-arm64.zip";
@@ -116,6 +116,7 @@ stdenv.mkDerivation {
     runHook preInstall
     mkdir -p "$out/Applications"
     cp -R ../VSCode-darwin-arm64/Paperlight.app "$out/Applications/"
+    cp -R ${languages} "$out/Applications/Paperlight.app/Contents/Resources/app/extensions/paperlight-languages"
     /usr/bin/codesign --force --deep --sign - "$out/Applications/Paperlight.app"
     /usr/bin/codesign --verify --deep --strict "$out/Applications/Paperlight.app"
     runHook postInstall
