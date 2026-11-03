@@ -1,0 +1,36 @@
+{
+  description = "Paperlight macOS build";
+
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+
+  outputs = { self, nixpkgs }:
+    let
+      system = "aarch64-darwin";
+      pkgs = import nixpkgs { inherit system; };
+      tools = pkgs.callPackage ./nix/tools.nix { };
+    in {
+      packages.${system} = {
+        dependencies = pkgs.fetchPnpmDeps {
+          pname = "paperlight";
+          src = self;
+          pnpm = tools.pnpm;
+          fetcherVersion = 5;
+          hash = "sha256-KoX98gm220Qw9wiPWWP9uB/g5Lw9Lm3dBDG/PcedWyk=";
+          postInstall = ''
+            for root in build build/rspack build/vite remote remote/web extensions/copilot build/npm/gyp; do
+              pnpm --dir "$root" install --ignore-scripts --frozen-lockfile --force
+            done
+          '';
+        };
+        default = pkgs.callPackage ./nix/package.nix {
+          inherit tools;
+          src = self;
+          pnpmDeps = self.packages.${system}.dependencies;
+          revision = builtins.substring 0 40 (self.rev or self.dirtyRev or "e4c97df79de850b9a719303384c95b39ab61afaa");
+        };
+      };
+      devShells.${system}.default = pkgs.mkShell {
+        packages = with pkgs; [ tools.node tools.pnpm python3 git pkg-config ];
+      };
+    };
+}

@@ -1,0 +1,20 @@
+--- a/src/vs/base/common/product.ts
++++ b/src/vs/base/common/product.ts
+@@ -97,6 +97,7 @@
+ }
+ 
+ export interface IProductConfiguration {
++	readonly configurationDefaults?: Record<string, unknown>;
+ 	readonly version: string;
+ 	readonly date?: string;
+ 	readonly quality?: string;
+--- a/src/vs/platform/configuration/common/configurationRegistry.ts
++++ b/src/vs/platform/configuration/common/configurationRegistry.ts
+@@ -1161,6 +1161,7 @@
+ 
+ const configurationRegistry = new ConfigurationRegistry();
+ Registry.add(Extensions.Configuration, configurationRegistry);
++configurationRegistry.registerDefaultConfigurations([{ overrides: product.configurationDefaults ?? {} }]);
+ 
+ export function validateProperty(property: string, schema: IRegisteredConfigurationPropertySchema, extensionId?: string): string | null {
+ 	if (!property.trim()) {
