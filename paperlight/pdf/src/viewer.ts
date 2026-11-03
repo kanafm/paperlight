@@ -74,7 +74,7 @@ async function load(url: string, state?: ViewState): Promise<void> {
 	await previous?.destroy();
 	if (current !== generation) { return; }
 	try {
-		const loading = task = getDocument({ url, cMapUrl: `${config.assets}cmaps/`, cMapPacked: true, standardFontDataUrl: `${config.assets}standard_fonts/`, wasmUrl: `${config.assets}wasm/`, enableXfa: false, disableAutoFetch: true, disableStream: true });
+		const loading = task = getDocument({ url, cMapUrl: `${config.assets}cmaps/`, cMapPacked: true, standardFontDataUrl: `${config.assets}standard_fonts/`, wasmUrl: `${config.assets}wasm/`, enableXfa: false, useWorkerFetch: false, disableAutoFetch: true, disableStream: true });
 		loading.onPassword = (update: (value: string) => void) => { password = update; host.postMessage({ type: 'password' }); };
 		const pdf = await loading.promise;
 		if (current !== generation) { await loading.destroy(); return; }
