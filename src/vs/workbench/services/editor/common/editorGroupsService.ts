@@ -479,6 +479,8 @@ export interface IEditorGroupsContainer {
  */
 export interface IEditorPart extends IEditorGroupsContainer {
 
+	setGroupVisible(group: IEditorGroup, visible: boolean): void;
+
 	/**
 	 * An event for when the editor part receives focus.
 	 */

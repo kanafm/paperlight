@@ -40,6 +40,7 @@ export class CommandCenterControl {
 	constructor(
 		windowTitle: WindowTitle,
 		hoverDelegate: IHoverDelegate,
+		centerViewItemProvider: ((action: IAction, options: IBaseActionViewItemOptions) => BaseActionViewItem) | undefined,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IQuickInputService quickInputService: IQuickInputService,
 	) {
@@ -54,7 +55,7 @@ export class CommandCenterControl {
 			telemetrySource: 'commandCenter',
 			actionViewItemProvider: (action, options) => {
 				if (action instanceof SubmenuItemAction && action.item.submenu === MenuId.CommandCenterCenter) {
-					return instantiationService.createInstance(CommandCenterCenterViewItem, action, windowTitle, { ...options, hoverDelegate });
+					return centerViewItemProvider?.(action, { ...options, hoverDelegate }) ?? instantiationService.createInstance(CommandCenterCenterViewItem, action, windowTitle, { ...options, hoverDelegate });
 				} else {
 					return createActionViewItem(instantiationService, action, { ...options, hoverDelegate });
 				}

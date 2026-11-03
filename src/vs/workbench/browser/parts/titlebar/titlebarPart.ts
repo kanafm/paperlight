@@ -8,6 +8,8 @@ import { localize, localize2 } from '../../../../nls.js';
 import { MultiWindowParts, Part } from '../../part.js';
 import { ITitleService } from '../../../services/title/browser/titleService.js';
 import { getWCOTitlebarAreaRect, getZoomFactor, isWCOEnabled, onDidChangeFullscreen } from '../../../../base/browser/browser.js';
+import { ProjectTabsViewItem } from '../../../services/projects/browser/projectTabsViewItem.js';
+import { projectNavigationEnabled } from '../../../services/projects/common/projectNavigation.js';
 import { MenuBarVisibility, getTitleBarStyle, getMenuBarVisibility, hasCustomTitlebar, hasNativeTitlebar, DEFAULT_CUSTOM_TITLEBAR_HEIGHT, getWindowControlsStyle, WindowControlsStyle, TitlebarStyle, MenuSettings, hasNativeMenu, TitleBarSetting } from '../../../../platform/window/common/window.js';
 import { IContextMenuService } from '../../../../platform/contextview/browser/contextView.js';
 import { StandardMouseEvent } from '../../../../base/browser/mouseEvent.js';
@@ -513,6 +515,9 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
 	protected override createContentArea(parent: HTMLElement): HTMLElement {
 		this.element = parent;
 		this.rootContainer = append(parent, $('.titlebar-container'));
+		if (projectNavigationEnabled && !this.isAuxiliary) {
+			parent.classList.add('paperlight-projects');
+		}
 		// Measure in the render phase so DOM reads do not force layout during startup.
 		this.titleBarToolBarOverflowScheduler = this._register(new AnimationFrameScheduler(this.rootContainer, () => this.updateTitleBarToolBarOverflow()));
 
@@ -671,7 +676,7 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
 
 		// Menu Title
 		else {
-			const commandCenter = this.instantiationService.createInstance(CommandCenterControl, this.windowTitle, this.hoverDelegate);
+			const commandCenter = this.instantiationService.createInstance(CommandCenterControl, this.windowTitle, this.hoverDelegate, projectNavigationEnabled && !this.isAuxiliary ? (action, options) => this.instantiationService.createInstance(ProjectTabsViewItem, action, options) : undefined);
 			reset(this.title, commandCenter.element);
 			this.titleDisposables.add(commandCenter);
 		}

@@ -1,0 +1,150 @@
+.monaco-workbench .part.titlebar.paperlight-projects > .titlebar-container.has-center > .titlebar-left {
+	flex: 0 0 84px;
+	width: 84px;
+}
+
+.monaco-workbench.fullscreen .part.titlebar.paperlight-projects > .titlebar-container.has-center > .titlebar-left {
+	flex-basis: 0;
+	width: 0;
+}
+
+.monaco-workbench .part.titlebar.paperlight-projects > .titlebar-container.has-center > .titlebar-center {
+	flex: 1;
+	width: auto;
+	max-width: none;
+	min-width: 0;
+}
+
+.monaco-workbench .part.titlebar.paperlight-projects > .titlebar-container.has-center > .titlebar-right {
+	flex: 0 0 auto;
+	width: auto;
+}
+
+.monaco-workbench .part.titlebar.paperlight-projects > .titlebar-container > .titlebar-center > .window-title {
+	flex: 1;
+	min-width: 0;
+	height: 100%;
+}
+
+.paperlight-projects .command-center,
+.paperlight-projects .command-center > .monaco-toolbar,
+.paperlight-projects .command-center > .monaco-toolbar > .monaco-action-bar,
+.paperlight-projects .command-center > .monaco-toolbar > .monaco-action-bar > .actions-container {
+	width: 100%;
+	height: 100%;
+	min-width: 0;
+}
+
+.paperlight-projects .command-center .action-item.paperlight-project-action {
+	display: flex;
+	flex: 1;
+	min-width: 0;
+	height: 100%;
+}
+
+.paperlight-project-strip {
+	display: flex;
+	width: 100%;
+	min-width: 0;
+	height: 100%;
+	box-sizing: border-box;
+	color: var(--vscode-tab-inactiveForeground);
+	-webkit-app-region: drag;
+}
+
+.paperlight-project-tabs {
+	-webkit-app-region: no-drag;
+	display: flex;
+	min-width: 0;
+	overflow: auto hidden;
+	scrollbar-width: none;
+}
+
+.paperlight-project-tab {
+	display: flex;
+	align-items: center;
+	flex-shrink: 0;
+	box-sizing: border-box;
+	gap: 8px;
+	min-width: 110px;
+	max-width: 240px;
+	padding: 0 8px 0 12px;
+	border-right: 1px solid var(--vscode-tab-border);
+	border-top: 2px solid transparent;
+	background: var(--vscode-tab-inactiveBackground);
+	cursor: pointer;
+	user-select: none;
+}
+
+.paperlight-project-tab.selected {
+	background: var(--vscode-tab-activeBackground);
+	color: var(--vscode-tab-activeForeground);
+	border-top-color: var(--vscode-tab-activeBorderTop, var(--vscode-focusBorder));
+}
+
+.paperlight-project-tab:hover {
+	background: var(--vscode-tab-hoverBackground);
+}
+
+.paperlight-project-add:hover,
+.paperlight-project-close:hover {
+	background: var(--vscode-toolbar-hoverBackground);
+}
+
+.paperlight-project-name {
+	flex: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.paperlight-project-strip button {
+	border: 0;
+	color: inherit;
+	cursor: pointer;
+}
+
+.paperlight-project-close {
+	background: transparent;
+	flex: 0 0 20px;
+	height: 20px;
+	padding: 0;
+	opacity: 0;
+	border-radius: var(--vscode-cornerRadius-small);
+}
+
+.paperlight-project-tab:hover .paperlight-project-close,
+.paperlight-project-tab:focus-within .paperlight-project-close,
+.paperlight-project-tab.selected .paperlight-project-close {
+	opacity: 1;
+}
+
+.paperlight-project-tab:focus-visible,
+.paperlight-project-strip button:focus-visible,
+.paperlight-project-tab.drop-target {
+	outline: 1px solid var(--vscode-focusBorder);
+	outline-offset: -1px;
+}
+
+.paperlight-project-add {
+	-webkit-app-region: no-drag;
+	align-self: center;
+	flex: 0 0 28px;
+	height: 24px;
+	padding: 0;
+	background: transparent;
+	border-radius: var(--vscode-cornerRadius-small);
+}
+
+.paperlight-project-tab.dragging {
+	opacity: 0.6;
+	cursor: grabbing;
+}
+
+.monaco-workbench .part.titlebar.paperlight-projects > .titlebar-container > .titlebar-center > .window-title > .command-center {
+	-webkit-app-region: drag;
+}
+
+.paperlight-projects .command-center .action-item:not(.paperlight-project-action) {
+	-webkit-app-region: no-drag;
+}

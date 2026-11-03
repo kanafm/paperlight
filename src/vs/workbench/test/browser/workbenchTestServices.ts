@@ -886,6 +886,8 @@ export class TestViewsService implements IViewsService {
 
 export class TestEditorGroupsService implements IEditorGroupsService {
 
+	setGroupVisible(group: IEditorGroup, visible: boolean): void { }
+
 	declare readonly _serviceBrand: undefined;
 
 	constructor(public groups: TestEditorGroupView[] = []) { }

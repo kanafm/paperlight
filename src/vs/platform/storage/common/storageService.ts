@@ -7,13 +7,13 @@ import { Promises } from '../../../base/common/async.js';
 import { DisposableStore } from '../../../base/common/lifecycle.js';
 import { Schemas } from '../../../base/common/network.js';
 import { joinPath } from '../../../base/common/resources.js';
-import { IStorage, Storage } from '../../../base/parts/storage/common/storage.js';
+import { IStorage, Storage, InMemoryStorageDatabase } from '../../../base/parts/storage/common/storage.js';
 import { IEnvironmentService } from '../../environment/common/environment.js';
 import { IRemoteService } from '../../ipc/common/services.js';
 import { AbstractStorageService, isProfileUsingDefaultStorage, StorageScope, WillSaveStateReason } from './storage.js';
 import { ApplicationStorageDatabaseClient, ApplicationSharedStorageDatabaseClient, ProfileStorageDatabaseClient, WorkspaceStorageDatabaseClient } from './storageIpc.js';
 import { isUserDataProfile, IUserDataProfile } from '../../userDataProfile/common/userDataProfile.js';
-import { IAnyWorkspaceIdentifier } from '../../workspace/common/workspace.js';
+import { IAnyWorkspaceIdentifier, isWorkspaceIdentifier } from '../../workspace/common/workspace.js';
 
 export class RemoteStorageService extends AbstractStorageService {
 
@@ -106,7 +106,9 @@ export class RemoteStorageService extends AbstractStorageService {
 
 		let workspaceStorage: IStorage | undefined = undefined;
 		if (workspace) {
-			const storageDataBaseClient = this.workspaceStorageDisposables.add(new WorkspaceStorageDatabaseClient(this.remoteService.getChannel('storage'), workspace));
+			const storageDataBaseClient = isWorkspaceIdentifier(workspace) && workspace.configPath.scheme === Schemas.tmp
+				? new InMemoryStorageDatabase()
+				: this.workspaceStorageDisposables.add(new WorkspaceStorageDatabaseClient(this.remoteService.getChannel('storage'), workspace));
 			workspaceStorage = this.workspaceStorageDisposables.add(new Storage(storageDataBaseClient));
 
 			this.workspaceStorageDisposables.add(workspaceStorage.onDidChangeStorage(e => this.emitDidChangeValue(StorageScope.WORKSPACE, e)));

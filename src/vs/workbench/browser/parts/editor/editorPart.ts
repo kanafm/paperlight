@@ -1417,6 +1417,10 @@ export class EditorPart extends Part<IEditorPartMemento> implements IEditorPart,
 		return this.count === 1 && this._activeGroup.isEmpty;
 	}
 
+	setGroupVisible(group: IEditorGroupView, visible: boolean): void {
+		this.gridWidget.setViewVisible(this.assertGroupView(group.id), visible);
+	}
+
 	setBoundarySashes(sashes: IBoundarySashes): void {
 		this.gridWidget.boundarySashes = sashes;
 		this.centeredLayoutWidget.boundarySashes = sashes;

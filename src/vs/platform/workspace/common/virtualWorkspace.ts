@@ -14,7 +14,7 @@ export function isVirtualResource(resource: URI) {
 export function getVirtualWorkspaceLocation(workspace: IWorkspace): { scheme: string; authority: string } | undefined {
 	if (workspace.folders.length) {
 		return workspace.folders.every(f => isVirtualResource(f.uri)) ? workspace.folders[0].uri : undefined;
-	} else if (workspace.configuration && isVirtualResource(workspace.configuration)) {
+	} else if (workspace.configuration && workspace.configuration.scheme !== Schemas.tmp && isVirtualResource(workspace.configuration)) {
 		return workspace.configuration;
 	}
 	return undefined;

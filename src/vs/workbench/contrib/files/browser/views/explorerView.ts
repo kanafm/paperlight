@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from '../../../../../nls.js';
+import { IProjectNavigationService, projectNavigationEnabled } from '../../../../services/projects/common/projectNavigation.js';
 import { URI } from '../../../../../base/common/uri.js';
 import { Sequencer } from '../../../../../base/common/async.js';
 import * as perf from '../../../../../base/common/performance.js';
@@ -240,10 +241,14 @@ export class ExplorerView extends ViewPane implements IExplorerView {
 		@ICommandService protected readonly commandService: ICommandService,
 		@IOpenerService openerService: IOpenerService,
 		@IAccessibilityService private readonly accessibilityService: IAccessibilityService,
+		@IProjectNavigationService private readonly projects: IProjectNavigationService,
 		@IEnvironmentService private readonly environmentService: IEnvironmentService
 	) {
 		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, hoverService);
 
+		this._register(this.projects.onDidSelect(() => {
+			if (this.tree) { void this.setTreeInput(); }
+		}));
 		this.delegate = options.delegate;
 		this.resourceContext = instantiationService.createInstance(ResourceContextKey);
 		this._register(this.resourceContext);
@@ -846,9 +851,9 @@ export class ExplorerView extends ViewPane implements IExplorerView {
 		if (initialInputSetup) {
 			perf.mark('code/willResolveExplorer');
 		}
-		const roots = this.explorerService.roots;
+		const roots = this.explorerService.roots.filter(root => !projectNavigationEnabled || root.resource.toString() === this.projects.active?.uri.toString());
 		let input: ExplorerItem | ExplorerItem[] = roots[0];
-		if (this.contextService.getWorkbenchState() !== WorkbenchState.FOLDER || roots[0].error) {
+		if (this.contextService.getWorkbenchState() !== WorkbenchState.FOLDER || !roots[0] || roots[0].error) {
 			// Display roots only when multi folder workspace
 			input = roots;
 		}

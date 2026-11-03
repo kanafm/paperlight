@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IConfigurationCache, ConfigurationKey } from './configuration.js';
+import { Schemas } from '../../../../base/common/network.js';
 import { URI } from '../../../../base/common/uri.js';
 import { FileOperationError, FileOperationResult, IFileService } from '../../../../platform/files/common/files.js';
 import { joinPath } from '../../../../base/common/resources.js';
@@ -26,7 +27,7 @@ export class ConfigurationCache implements IConfigurationCache {
 
 	needsCaching(resource: URI): boolean {
 		// Cache all non native resources
-		return !this.donotCacheResourcesWithSchemes.includes(resource.scheme);
+		return resource.scheme !== Schemas.tmp && !this.donotCacheResourcesWithSchemes.includes(resource.scheme);
 	}
 
 	read(key: ConfigurationKey): Promise<string> {
