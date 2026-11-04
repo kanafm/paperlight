@@ -1,0 +1,63 @@
+--- a/extensions/markdown-language-features/src/preview/markdownEditorProvider.ts
++++ b/extensions/markdown-language-features/src/preview/markdownEditorProvider.ts
+@@ -267,6 +267,7 @@
+ 	readonly #mediaRoot: vscode.Uri;
+ 	readonly #extensionUri: vscode.Uri;
+ 	readonly #globalState: vscode.Memento;
++	#readonlyMode: boolean;
+ 	readonly #linkOpener: MdLinkOpener;
+ 	readonly #contributions: MarkdownContributionProvider;
+ 	readonly #logger: ILogger;
+@@ -287,10 +288,12 @@
+ 		contributions: MarkdownContributionProvider,
+ 		logger: ILogger,
+ 		tryOpenLink: (href: string, fromResource: vscode.Uri) => Promise<boolean>,
++		private readonly modeOptions = { initialReadonly: true, persist: true },
+ 	) {
+ 		super();
+ 		this.#extensionUri = extensionUri;
+ 		this.#globalState = globalState;
++		this.#readonlyMode = modeOptions.persist ? globalState.get(MarkdownEditorProvider.#readonlyStateKey, modeOptions.initialReadonly) : modeOptions.initialReadonly;
+ 		this.#linkOpener = linkOpener;
+ 		this.#contributions = contributions;
+ 		this.#logger = logger;
+@@ -386,7 +389,7 @@
+ 		let expectedWebviewContent: { readonly content: string; readonly epoch: number } | undefined;
+ 		let webviewText = document.getText();
+ 		let webviewReady = false;
+-		let readonly = this.#globalState.get(MarkdownEditorProvider.#readonlyStateKey, true);
++		let readonly = this.#readonlyMode;
+ 		let codeBlockEditorProviders: readonly CodeBlockEditorProviderDefinition[] | undefined;
+ 		let contributionUpdate = 0;
+ 		const resolveCancellation = new vscode.CancellationTokenSource();
+@@ -566,7 +569,10 @@
+ 
+ 			setReadonly: async message => {
+ 				readonly = message.readonly;
+-				await this.#globalState.update(MarkdownEditorProvider.#readonlyStateKey, message.readonly);
++				this.#readonlyMode = message.readonly;
++				if (this.modeOptions.persist) {
++					await this.#globalState.update(MarkdownEditorProvider.#readonlyStateKey, message.readonly);
++				}
+ 			},
+ 			history: async (message, _context, { signal }) => {
+ 				// The TextDocument owns undo/redo, so route the chord to the built-in
+@@ -1164,7 +1170,7 @@
+ 			content: document.getText(),
+ 			documentVersion: document.version,
+ 			editEpoch,
+-			readonly: this.#globalState.get(MarkdownEditorProvider.#readonlyStateKey, true),
++			readonly: this.#readonlyMode,
+ 			richLinksEnabled: vscode.workspace.getConfiguration('markdown').get<boolean>('experimental.richLinks.enabled', true),
+ 			linkPresentationRules: vscode.window.linkPresentationRules.map(rule => ({
+ 				id: rule.id,
+--- a/extensions/markdown-language-features/src/extension.shared.ts
++++ b/extensions/markdown-language-features/src/extension.shared.ts
+@@ -65,6 +65,7 @@
+ 		contributions,
+ 		logger,
+ 		(href, fromResource) => linkPresentationService.openLink(href, fromResource),
++		{ initialReadonly: false, persist: false },
+ 	);
+ 	context.subscriptions.push(markdownEditorProvider);
+ 	context.subscriptions.push(registerMarkdownEditorCommands(context, markdownEditorProvider));
