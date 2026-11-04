@@ -1,4 +1,5 @@
 import './projectTabs.css';
+import { observeNavigationTabs, revealNavigationTab } from './navigationTabs.js';
 import { $, append, clearNode, addDisposableListener } from '../../../../base/browser/dom.js';
 import { Disposable, DisposableStore } from '../../../../base/common/lifecycle.js';
 import { Action } from '../../../../base/common/actions.js';
@@ -25,7 +26,8 @@ export class ProjectTabs extends Disposable {
 	) {
 		super();
 		this.strip = append(parent, $('.paperlight-project-strip'));
-		this.tabs = append(this.strip, $('.paperlight-project-tabs'));
+		this.tabs = append(this.strip, $('.paperlight-project-tabs.paperlight-tabs.modern-ui-editor-tab-strip.modern-ui-editor-tab-list'));
+		this._register(observeNavigationTabs(this.tabs));
 		this.tabs.setAttribute('role', 'tablist');
 		this.tabs.setAttribute('aria-label', localize('projects', "Projects"));
 		const add = append(this.strip, $('button.paperlight-project-add.codicon.codicon-add')) as HTMLButtonElement;
@@ -33,12 +35,12 @@ export class ProjectTabs extends Disposable {
 		this._register(this.hover.setupManagedHover(getDefaultHoverDelegate('mouse'), add, localize('addProject', "Add Project")));
 		this._register(addDisposableListener(add, 'click', () => this.run(() => this.projects.add())));
 		this._register(addDisposableListener(this.strip, 'wheel', (event: WheelEvent) => {
-			if (event.ctrlKey) { return; }
+			if (event.ctrlKey || event.shiftKey) { return; }
 			event.preventDefault();
 			event.stopPropagation();
 			const step = this.wheel.step(event.deltaX, event.deltaY, event.deltaMode, event.timeStamp);
 			const index = this.projects.projects.findIndex(project => project === this.projects.active);
-			const next = this.projects.projects[index + step];
+			const next = this.projects.projects[Math.max(0, Math.min(this.projects.projects.length - 1, index + step))];
 			if (step && next) { this.run(() => this.projects.select(next.uri)); }
 		}, { passive: false }));
 		this._register(this.projects.onDidChange(() => this.render()));
@@ -55,14 +57,16 @@ export class ProjectTabs extends Disposable {
 		clearNode(this.tabs);
 		for (const project of this.projects.projects) {
 			const selected = project === this.projects.active;
-			const tab = append(this.tabs, $('div.paperlight-project-tab'));
+			const tab = append(this.tabs, $('div.paperlight-project-tab.paperlight-tab.modern-ui-editor-tab'));
 			tab.setAttribute('role', 'tab');
 			tab.setAttribute('aria-label', project.name);
 			tab.setAttribute('aria-selected', String(selected));
 			tab.tabIndex = selected ? 0 : -1;
-			tab.classList.toggle('selected', selected);
-			append(tab, $('span.paperlight-project-name')).textContent = project.name;
-			const close = append(tab, $('button.paperlight-project-close.codicon.codicon-close')) as HTMLButtonElement;
+			tab.classList.toggle('active', selected);
+			append(tab, $('span.modern-ui-editor-tab-fill'));
+			append(tab, $('span.paperlight-tab-label.modern-ui-editor-tab-label')).textContent = project.name;
+			const close = append(tab, $('button.paperlight-tab-close.codicon.codicon-close')) as HTMLButtonElement;
+			close.tabIndex = -1;
 			close.setAttribute('aria-label', localize('closeProject', "Close {0}", project.name));
 			this.items.add(this.hover.setupManagedHover(getDefaultHoverDelegate('mouse'), tab, project.uri.fsPath));
 			this.items.add(addDisposableListener(tab, 'click', () => this.run(() => this.projects.select(project.uri))));
@@ -146,7 +150,7 @@ export class ProjectTabs extends Disposable {
 			}));
 			this.items.add(addDisposableListener(this.tabs.ownerDocument, 'pointercancel', () => { origin = undefined; clearDrag(); }));
 			if (selected) {
-				tab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+				revealNavigationTab(this.tabs);
 				if (hadFocus) { tab.focus(); }
 			}
 		}

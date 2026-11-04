@@ -1,4 +1,6 @@
 import './paneNavigation.css';
+import { observeNavigationTabs, revealNavigationTab } from '../../../services/projects/browser/navigationTabs.js';
+import { ProjectWheel } from '../../../services/projects/common/projectWheel.js';
 import { $, append, addDisposableListener, EventType } from '../../../../base/browser/dom.js';
 import { ActionBar } from '../../../../base/browser/ui/actionbar/actionbar.js';
 import { AnchorPosition } from '../../../../base/browser/ui/contextview/contextview.js';
@@ -20,10 +22,14 @@ import { IPaneCompositePartService } from '../../../services/panecomposite/brows
 
 export const compactNavigationEnabled = product.nameShort === 'Paperlight';
 
+export interface INavigationTabAction extends IAction {
+	close(): Promise<void>;
+}
+
 export interface IPanelNavigationProvider {
 	readonly onDidChange: Event<void>;
 	getToolbarActions(): IAction[];
-	getTabActions(): IAction[];
+	getTabActions(): INavigationTabAction[];
 }
 
 export const IPaneNavigationService = createDecorator<IPaneNavigationService>('paneNavigation');
@@ -34,7 +40,7 @@ export interface IPaneNavigationService {
 	registerPanelProvider(id: string, provider: IPanelNavigationProvider): IDisposable;
 	getLabel(location: ViewContainerLocation): string;
 	getToolbarActions(): IAction[];
-	getTabActions(): IAction[];
+	getTabActions(): INavigationTabAction[];
 	showMenu(location: ViewContainerLocation, anchor: HTMLElement): void;
 }
 
@@ -78,7 +84,7 @@ class PaneNavigationService extends Disposable implements IPaneNavigationService
 		return id ? this.providers.get(id)?.getToolbarActions() ?? [] : [];
 	}
 
-	getTabActions(): IAction[] {
+	getTabActions(): INavigationTabAction[] {
 		const id = this.panes.getActivePaneComposite(ViewContainerLocation.Panel)?.getId();
 		return id ? this.providers.get(id)?.getTabActions() ?? [] : [];
 	}
@@ -132,7 +138,7 @@ export class CompactPanelTitle extends Disposable {
 		@INotificationService notifications: INotificationService
 	) {
 		super();
-		this.element = append(parent, $('.composite.title.paperlight-panel-title'));
+		this.element = append(parent, $('.composite.title.paperlight-panel-title.modern-ui-editor-tab-group.modern-ui-editor-tab-group-active'));
 		const selector = append(this.element, $('button.paperlight-pane-selector')) as HTMLButtonElement;
 		selector.type = 'button';
 		selector.setAttribute('aria-haspopup', 'menu');
@@ -148,9 +154,20 @@ export class CompactPanelTitle extends Disposable {
 				open();
 			}
 		}));
-		const tabs = append(this.element, $('.paperlight-terminal-tabs'));
+		const tabs = append(this.element, $('.paperlight-terminal-tabs.paperlight-tabs.modern-ui-editor-tab-strip.modern-ui-editor-tab-list'));
+		this._register(observeNavigationTabs(tabs));
 		tabs.setAttribute('role', 'tablist');
 		tabs.setAttribute('aria-label', localize('terminalSessions', "Terminal Sessions"));
+		const wheel = new ProjectWheel();
+		this._register(addDisposableListener(tabs, 'wheel', (event: WheelEvent) => {
+			if (event.ctrlKey || event.shiftKey) { return; }
+			event.preventDefault();
+			event.stopPropagation();
+			const step = wheel.step(event.deltaX, event.deltaY, event.deltaMode, event.timeStamp);
+			const actions = navigation.getTabActions();
+			const next = actions[Math.max(0, Math.min(actions.length - 1, actions.findIndex(action => action.checked) + step))];
+			if (step && next) { Promise.resolve(next.run()).catch(error => notifications.error(error)); }
+		}, { passive: false }));
 		const tabDisposables = this._register(new DisposableStore());
 		const controls = append(this.element, $('.paperlight-panel-controls'));
 		const toolbar = this._register(new ActionBar(controls, { ariaLabel: localize('terminalActions', "Terminal Actions") }));
@@ -170,30 +187,41 @@ export class CompactPanelTitle extends Disposable {
 				}, error => notifications.error(error));
 			};
 			for (const [index, action] of actions.entries()) {
-				const tab = append(tabs, $('button.paperlight-terminal-tab')) as HTMLButtonElement;
-				tab.type = 'button';
-				tab.textContent = action.label;
+				const tab = append(tabs, $('div.paperlight-tab.modern-ui-editor-tab'));
+				tab.classList.toggle('active', !!action.checked);
+				append(tab, $('span.modern-ui-editor-tab-fill'));
+				append(tab, $('span.paperlight-tab-label.modern-ui-editor-tab-label')).textContent = action.label;
+				const close = append(tab, $('button.paperlight-tab-close.codicon.codicon-close')) as HTMLButtonElement;
+				close.tabIndex = -1;
+				close.setAttribute('aria-label', localize('closeTerminal', "Close {0}", action.label));
+				const kill = () => action.close().catch(error => notifications.error(error));
+				tabDisposables.add(addDisposableListener(close, 'click', event => { event.stopPropagation(); void kill(); }));
+				tabDisposables.add(addDisposableListener(tab, 'mousedown', event => { if (event.button === 1) { event.preventDefault(); } }));
+				tabDisposables.add(addDisposableListener(tab, 'auxclick', event => {
+					if (event.button === 1) { event.preventDefault(); event.stopPropagation(); void kill(); }
+				}));
 				tab.setAttribute('role', 'tab');
+				tab.setAttribute('aria-label', action.label);
 				tab.setAttribute('aria-selected', String(!!action.checked));
 				tab.tabIndex = action.checked ? 0 : -1;
 				tabDisposables.add(hover.setupManagedHover(getDefaultHoverDelegate('mouse'), tab, action.label));
 				tabDisposables.add(addDisposableListener(tab, EventType.CLICK, () => run(action, false)));
 				tabDisposables.add(addDisposableListener(tab, EventType.KEY_DOWN, (event: KeyboardEvent) => {
-					const next = event.key === 'ArrowRight' ? (index + 1) % actions.length
-						: event.key === 'ArrowLeft' ? (index + actions.length - 1) % actions.length
+					if (event.target !== tab) { return; }
+					if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); run(action, false); return; }
+					const next = event.key === 'ArrowRight' ? index + 1
+						: event.key === 'ArrowLeft' ? index - 1
 							: event.key === 'Home' ? 0 : event.key === 'End' ? actions.length - 1 : undefined;
 					if (next !== undefined) {
 						event.preventDefault();
-						run(actions[next], true);
+						if (actions[next]) { run(actions[next], true); }
 					}
 				}));
 			}
 			tabs.scrollLeft = scrollLeft;
 			const selected = tabs.querySelector<HTMLElement>('[aria-selected="true"]');
 			if (restoreFocus) { selected?.focus(); }
-			if (selected && (selected.offsetLeft < tabs.scrollLeft || selected.offsetLeft + selected.offsetWidth > tabs.scrollLeft + tabs.clientWidth)) {
-				tabs.scrollLeft = selected.offsetLeft;
-			}
+			revealNavigationTab(tabs);
 			toolbar.clear();
 			toolbar.push(navigation.getToolbarActions(), { icon: true, label: false });
 		};

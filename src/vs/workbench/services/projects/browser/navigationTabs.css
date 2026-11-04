@@ -1,0 +1,85 @@
+.paperlight-tabs {
+	position: relative;
+	display: flex;
+	min-width: 0;
+	height: 100%;
+	overflow: auto hidden;
+	scrollbar-width: none;
+	--modern-ui-connected-tab-surface: var(--vscode-editor-background);
+	--editor-group-tab-height: 24px;
+}
+
+.paperlight-tab {
+	position: relative;
+	display: flex;
+	align-items: center;
+	flex: 0 0 auto;
+	box-sizing: border-box;
+	gap: 8px;
+	min-width: min(90px, 100%);
+	max-width: min(240px, 100%);
+	height: 100%;
+	padding: 0 8px;
+	border: 0;
+	border-radius: var(--vscode-cornerRadius-small) var(--vscode-cornerRadius-small) 0 0;
+	background: var(--vscode-tab-inactiveBackground);
+	color: var(--vscode-tab-inactiveForeground);
+	font: inherit;
+	cursor: pointer;
+	user-select: none;
+}
+
+.paperlight-tab.active {
+	background: var(--vscode-tab-activeBackground);
+	color: var(--vscode-tab-activeForeground);
+}
+
+.paperlight-tab:hover {
+	background: var(--vscode-tab-hoverBackground);
+}
+
+.paperlight-tab-label {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.paperlight-tab-close {
+	position: relative;
+	z-index: 2;
+	flex: 0 0 20px;
+	height: 20px;
+	padding: 0;
+	border: 0;
+	border-radius: var(--vscode-cornerRadius-small);
+	background: transparent;
+	color: inherit;
+	cursor: pointer;
+	opacity: 0;
+}
+
+.paperlight-tab:hover .paperlight-tab-close,
+.paperlight-tab:focus-within .paperlight-tab-close,
+.paperlight-tab.active .paperlight-tab-close {
+	opacity: 1;
+}
+
+.paperlight-tab-close:hover {
+	background: var(--vscode-toolbar-hoverBackground);
+}
+
+.paperlight-tab:focus-visible,
+.paperlight-tab-close:focus-visible,
+.paperlight-tab.drop-target {
+	outline: 1px solid var(--vscode-focusBorder);
+	outline-offset: -1px;
+}
+
+.modern-ui-connected-editor-tabs .paperlight-tabs {
+	--modern-ui-editor-tab-active-background: var(--modern-ui-connected-tab-active-background);
+	--modern-ui-editor-tab-unfocused-active-background: var(--modern-ui-connected-tab-active-background);
+	--modern-ui-editor-tab-active-hover-background: var(--modern-ui-connected-tab-active-hover-background);
+	--modern-ui-editor-tab-unfocused-active-hover-background: var(--modern-ui-connected-tab-active-hover-background);
+}

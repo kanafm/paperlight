@@ -9,6 +9,8 @@ import { shorten } from '../../../../base/common/labels.js';
 import { EditorResourceAccessor, Verbosity, IEditorPartOptions, SideBySideEditor, DEFAULT_EDITOR_ASSOCIATION, EditorInputCapabilities, IUntypedEditorInput, preventEditorClose, EditorCloseMethod, EditorsOrder, IToolbarActions } from '../../../common/editor.js';
 import { EditorInput } from '../../../common/editor/editorInput.js';
 import { computeEditorAriaLabel } from '../../editor.js';
+import { ProjectWheel } from '../../../services/projects/common/projectWheel.js';
+import { projectNavigationEnabled } from '../../../services/projects/common/projectNavigation.js';
 import { StandardKeyboardEvent } from '../../../../base/browser/keyboardEvent.js';
 import { EventType as TouchEventType, GestureEvent, Gesture } from '../../../../base/browser/touch.js';
 import { KeyCode } from '../../../../base/common/keyCodes.js';
@@ -553,11 +555,22 @@ export class MultiEditorTabsControl extends EditorTabsControl {
 			}
 		}));
 
+		const tabWheel = new ProjectWheel();
+
 		// Mouse-wheel support to switch to tabs optionally
-		this._register(addDisposableListener(tabsContainer, EventType.MOUSE_WHEEL, (e: WheelEvent) => {
+		this._register(addDisposableListener(projectNavigationEnabled ? assertReturnsDefined(this.tabsAndActionsContainer) : tabsContainer, EventType.MOUSE_WHEEL, (e: WheelEvent) => {
 			const activeEditor = this.groupView.activeEditor;
 			if (!activeEditor || this.groupView.count < 2) {
 				return;  // need at least 2 open editors
+			}
+
+			if (projectNavigationEnabled) {
+				if (e.ctrlKey || e.shiftKey) { return; }
+				EventHelper.stop(e, true);
+				const step = tabWheel.step(e.deltaX, e.deltaY, e.deltaMode, e.timeStamp);
+				const next = this.groupView.getEditorByIndex(Math.max(0, Math.min(this.groupView.count - 1, this.groupView.getIndexOfEditor(activeEditor) + step)));
+				if (step && next) { void this.groupView.openEditor(next); }
+				return;
 			}
 
 			// Shift-key enables or disables this behaviour depending on the setting
@@ -601,7 +614,7 @@ export class MultiEditorTabsControl extends EditorTabsControl {
 
 			// Disable normal scrolling, opening the editor will already reveal it properly
 			EventHelper.stop(e, true);
-		}));
+		}, { capture: projectNavigationEnabled, passive: false }));
 
 		// Context menu
 		const showContextMenu = (e: Event) => {

@@ -3,6 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { EditorWindowDrag } from './editorWindowDrag.js';
+import { projectNavigationEnabled } from '../../../services/projects/common/projectNavigation.js';
 import { Event } from '../../../../base/common/event.js';
 import { getZoomFactor } from '../../../../base/browser/browser.js';
 import { $, addDisposableListener, append, EventType, getWindow, getWindowId, hide, show } from '../../../../base/browser/dom.js';
@@ -35,6 +37,7 @@ export class NativeTitlebarPart extends BrowserTitlebarPart {
 	//#region IView
 
 	override get minimumHeight(): number {
+		if (projectNavigationEnabled && this.getId() === Parts.TITLEBAR_PART) { return 4; }
 		if (!isMacintosh) {
 			return super.minimumHeight;
 		}
@@ -83,6 +86,7 @@ export class NativeTitlebarPart extends BrowserTitlebarPart {
 		super(id, targetWindow, editorGroupsContainer, contextMenuService, configurationService, environmentService, instantiationService, themeService, storageService, layoutService, contextKeyService, hostService, editorService, menuService, keybindingService, actionViewItemService);
 
 		this.tahoeOrNewer = isTahoeOrNewer(environmentService.os.release);
+		if (projectNavigationEnabled && id === Parts.TITLEBAR_PART) { this._register(new EditorWindowDrag(targetWindow, nativeHostService)); }
 
 		this.handleWindowsAlwaysOnTop(targetWindow.vscodeWindowId);
 	}
@@ -274,7 +278,7 @@ export class NativeTitlebarPart extends BrowserTitlebarPart {
 		super.layout(width, height);
 
 		if (useWindowControlsOverlay(this.configurationService)) {
-			const newHeight = Math.round(height * getZoomFactor(getWindow(this.element)));
+			const newHeight = Math.round((projectNavigationEnabled && this.getId() === Parts.TITLEBAR_PART ? 38 : height) * getZoomFactor(getWindow(this.element)));
 			if (newHeight !== this.cachedWindowControlHeight) {
 				this.cachedWindowControlHeight = newHeight;
 				this.nativeHostService.updateWindowControls({

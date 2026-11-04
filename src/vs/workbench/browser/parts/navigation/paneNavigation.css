@@ -46,45 +46,11 @@
 }
 
 .paperlight-terminal-tabs {
-	position: relative;
-	display: flex;
 	flex: 1;
-	min-width: 0;
 	margin: 0 8px;
-	overflow-x: auto;
-	scrollbar-width: thin;
+	height: 28px;
 }
 
 .paperlight-terminal-tabs[hidden] {
 	display: none;
-}
-
-.paperlight-terminal-tab {
-	flex-shrink: 0;
-	max-width: 180px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	padding: 4px 8px;
-	border: 0;
-	border-bottom: 1px solid transparent;
-	background: transparent;
-	color: var(--vscode-panelTitle-inactiveForeground);
-	font: inherit;
-	cursor: pointer;
-}
-
-.paperlight-terminal-tab[aria-selected="true"] {
-	color: var(--vscode-panelTitle-activeForeground);
-	border-bottom-color: var(--vscode-panelTitle-activeBorder);
-	background: var(--vscode-tab-activeBackground);
-}
-
-.paperlight-terminal-tab:hover {
-	background: var(--vscode-toolbar-hoverBackground);
-}
-
-.paperlight-terminal-tab:focus-visible {
-	outline: 1px solid var(--vscode-focusBorder);
-	outline-offset: -1px;
 }

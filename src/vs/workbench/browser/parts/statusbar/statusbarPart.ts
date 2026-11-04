@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import './media/statusbarpart.css';
+import { BottomNavigation } from '../navigation/bottomNavigation.js';
+import { projectNavigationEnabled } from '../../../services/projects/common/projectNavigation.js';
 import { localize } from '../../../../nls.js';
 import { Disposable, DisposableStore, disposeIfDisposable, IDisposable, MutableDisposable, toDisposable } from '../../../../base/common/lifecycle.js';
 import { MultiWindowParts, Part } from '../../part.js';
@@ -134,7 +136,7 @@ class StatusbarPart extends Part implements IStatusbarEntryContainer {
 	//#region IView
 
 	private get floatingBottomPadding(): number {
-		if (this.getId() !== Parts.STATUSBAR_PART || !this.layoutService.isFloatingPanelsEnabled()) {
+		if (projectNavigationEnabled || this.getId() !== Parts.STATUSBAR_PART || !this.layoutService.isFloatingPanelsEnabled()) {
 			return 0;
 		}
 		return this.layoutService.isModernUICompact() ? StatusbarPart.COMPACT_DENSITY_FLOATING_BOTTOM_PADDING : StatusbarPart.FLOATING_BOTTOM_PADDING;
@@ -142,8 +144,8 @@ class StatusbarPart extends Part implements IStatusbarEntryContainer {
 
 	readonly minimumWidth: number = 0;
 	readonly maximumWidth: number = Number.POSITIVE_INFINITY;
-	get minimumHeight(): number { return StatusbarPart.HEIGHT + this.floatingBottomPadding; }
-	get maximumHeight(): number { return StatusbarPart.HEIGHT + this.floatingBottomPadding; }
+	get minimumHeight(): number { return projectNavigationEnabled && this.getId() === Parts.STATUSBAR_PART ? 32 : StatusbarPart.HEIGHT + this.floatingBottomPadding; }
+	get maximumHeight(): number { return this.minimumHeight; }
 
 	//#endregion
 
@@ -470,6 +472,10 @@ class StatusbarPart extends Part implements IStatusbarEntryContainer {
 		// Right items container
 		this.rightItemsContainer = $('.right-items.items-container');
 		this.element.appendChild(this.rightItemsContainer);
+
+		if (projectNavigationEnabled && this.getId() === Parts.STATUSBAR_PART) {
+			this._register(this.instantiationService.createInstance(BottomNavigation, parent, this.rightItemsContainer));
+		}
 
 		// Context menu support
 		this._register(addDisposableListener(parent, EventType.CONTEXT_MENU, e => this.showContextMenu(e)));

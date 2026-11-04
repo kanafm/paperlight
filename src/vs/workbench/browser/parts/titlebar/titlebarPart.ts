@@ -8,7 +8,6 @@ import { localize, localize2 } from '../../../../nls.js';
 import { MultiWindowParts, Part } from '../../part.js';
 import { ITitleService } from '../../../services/title/browser/titleService.js';
 import { getWCOTitlebarAreaRect, getZoomFactor, isWCOEnabled, onDidChangeFullscreen } from '../../../../base/browser/browser.js';
-import { ProjectTabsViewItem } from '../../../services/projects/browser/projectTabsViewItem.js';
 import { projectNavigationEnabled } from '../../../services/projects/common/projectNavigation.js';
 import { MenuBarVisibility, getTitleBarStyle, getMenuBarVisibility, hasCustomTitlebar, hasNativeTitlebar, DEFAULT_CUSTOM_TITLEBAR_HEIGHT, getWindowControlsStyle, WindowControlsStyle, TitlebarStyle, MenuSettings, hasNativeMenu, TitleBarSetting } from '../../../../platform/window/common/window.js';
 import { IContextMenuService } from '../../../../platform/contextview/browser/contextView.js';
@@ -676,7 +675,7 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
 
 		// Menu Title
 		else {
-			const commandCenter = this.instantiationService.createInstance(CommandCenterControl, this.windowTitle, this.hoverDelegate, projectNavigationEnabled && !this.isAuxiliary ? (action, options) => this.instantiationService.createInstance(ProjectTabsViewItem, action, options) : undefined);
+			const commandCenter = this.instantiationService.createInstance(CommandCenterControl, this.windowTitle, this.hoverDelegate, undefined);
 			reset(this.title, commandCenter.element);
 			this.titleDisposables.add(commandCenter);
 		}

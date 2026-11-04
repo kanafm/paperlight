@@ -53,12 +53,12 @@ class CompactNavigation extends Disposable {
 				toAction({ id: TerminalCommandId.New, label: localize('newTerminal', "New Terminal"), class: ThemeIcon.asClassName(Codicon.add), run: () => commands.executeCommand(TerminalCommandId.New) }),
 				toAction({ id: TerminalCommandId.Kill, label: localize('killTerminal', "Kill Terminal"), class: ThemeIcon.asClassName(Codicon.trash), enabled: !!groups.activeInstance, run: () => groups.activeInstance ? terminals.safeDisposeTerminal(groups.activeInstance) : Promise.resolve() })
 			],
-			getTabActions: () => groups.instances.map((instance, index) => toAction({
+			getTabActions: () => groups.instances.map((instance, index) => ({ ...toAction({
 				id: 'paperlight.terminal.' + instance.instanceId,
 				label: localize('terminalSession', "{0}: {1}", index + 1, instance.title),
 				checked: instance === groups.activeInstance,
 				run: () => groups.focusInstance(instance)
-			}))
+			}), close: () => terminals.safeDisposeTerminal(instance) }))
 		}));
 		this.initializeDefaults(projects, extensions, views, storage).catch(error => notifications.error(error));
 	}

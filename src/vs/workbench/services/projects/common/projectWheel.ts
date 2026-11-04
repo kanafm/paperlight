@@ -2,29 +2,27 @@ export class ProjectWheel {
 	private lastTime = -Infinity;
 	private total = 0;
 	private direction = 0;
-	private switched = false;
 	private lastDelta = 0;
 
 	step(deltaX: number, deltaY: number, deltaMode: number, time: number): number {
 		const delta = Math.abs(deltaX) > Math.abs(deltaY) ? deltaX : deltaY;
 		const direction = Math.sign(delta);
-		if (!direction) {
-			return 0;
-		}
-		const discrete = deltaMode !== 0 || (Math.abs(delta) >= 60 && delta === this.lastDelta && time - this.lastTime >= 50);
-		if (time - this.lastTime > 180 || direction !== this.direction || discrete) {
-			this.total = 0;
-			this.switched = false;
-		}
+		if (!direction) { return 0; }
+		const elapsed = time - this.lastTime;
+		const discrete = deltaMode !== 0 || (Number.isInteger(delta) && (Math.abs(delta) >= 60 || (delta === this.lastDelta && elapsed >= 50)));
+		const started = elapsed > 180 || direction !== this.direction;
+		if (started || discrete) { this.total = 0; }
 		this.lastTime = time;
 		this.lastDelta = delta;
 		this.direction = direction;
-		this.total += Math.abs(delta) * (deltaMode === 1 ? 20 : deltaMode === 2 ? 120 : 1);
-		if (this.switched || this.total < 40) {
-			return 0;
+		if (discrete) {
+			const unit = deltaMode === 1 ? 3 : deltaMode === 2 ? 1 : 100;
+			return direction * Math.max(1, Math.round(Math.abs(delta) / unit));
 		}
-		this.switched = true;
-		this.total = 0;
-		return direction;
+		if (started && Math.abs(delta) < 16) { return direction; }
+		this.total += Math.abs(delta);
+		const steps = Math.floor(this.total / 16);
+		this.total %= 16;
+		return steps ? steps * direction : 0;
 	}
 }

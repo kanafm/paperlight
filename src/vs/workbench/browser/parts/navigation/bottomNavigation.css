@@ -1,0 +1,110 @@
+.monaco-workbench .part.titlebar.paperlight-projects {
+	visibility: hidden;
+}
+
+.monaco-workbench .part.statusbar.paperlight-bottom-navigation {
+	align-items: center;
+	padding: 0 6px;
+	height: 32px;
+	gap: 4px;
+}
+
+.monaco-workbench .part.statusbar.paperlight-bottom-navigation > .left-items {
+	flex: 0 1 auto;
+	min-width: 0;
+	max-width: 30%;
+	height: 32px;
+	align-items: center;
+	overflow: hidden;
+}
+
+.monaco-workbench .part.statusbar.paperlight-bottom-navigation > .right-items {
+	flex: 0 1 auto;
+	min-width: 0;
+	max-width: 50%;
+	height: 32px;
+	align-items: center;
+}
+
+.monaco-workbench .part.statusbar.paperlight-bottom-navigation > .items-container > .statusbar-item {
+	line-height: 32px;
+}
+
+.monaco-workbench .part.statusbar.paperlight-bottom-navigation > .left-items > .statusbar-item {
+	min-width: 0;
+}
+
+.monaco-workbench .part.statusbar.paperlight-bottom-navigation > .left-items > [id="paperlight.navigation.sidebar"] {
+	flex-shrink: 0;
+}
+
+.paperlight-history,
+.paperlight-layout-controls,
+.paperlight-layout-menu {
+	flex: 0 0 auto;
+}
+
+.paperlight-bottom-navigation .monaco-action-bar .action-item .action-label {
+	color: inherit;
+}
+
+.paperlight-bottom-navigation .monaco-action-bar .action-item {
+	margin: 0 2px;
+}
+
+.paperlight-layout-menu {
+	display: none;
+}
+
+.paperlight-bottom-projects {
+	flex: 1 1 160px;
+	min-width: 118px;
+	height: 28px;
+}
+
+.paperlight-window-drag {
+	position: absolute;
+	inset: 0 auto auto 0;
+	width: 84px;
+	height: 32px;
+	z-index: 50;
+	-webkit-app-region: drag;
+}
+
+.monaco-workbench.fullscreen .paperlight-window-drag {
+	display: none;
+}
+
+.monaco-workbench .part > .composite.title.paperlight-window-inset,
+.monaco-workbench .part.editor .editor-group-container > .title.paperlight-window-inset > .tabs-and-actions-container,
+.monaco-workbench .part.editor .editor-group-container > .title.paperlight-window-inset:not(.tabs) {
+	padding-left: var(--paperlight-window-inset) !important;
+	box-sizing: border-box;
+}
+
+@media (max-width: 1000px) {
+	.paperlight-layout-controls { display: none; }
+	.paperlight-layout-menu { display: block; }
+	.monaco-workbench .part.statusbar.paperlight-bottom-navigation > .left-items { max-width: 25%; }
+}
+
+.paperlight-bottom-workbench .part.sidebar > .title > .title-label {
+	visibility: hidden;
+}
+
+.paperlight-bottom-workbench .part.sidebar > .title {
+	-webkit-app-region: drag;
+}
+
+.paperlight-bottom-workbench .part.sidebar > .title > .title-actions {
+	-webkit-app-region: no-drag;
+}
+
+.paperlight-bottom-workbench .part.editor .tabs-and-actions-container {
+	-webkit-app-region: no-drag;
+	user-select: none;
+}
+
+.paperlight-bottom-workbench .part.editor .tabs-and-actions-container :is(.tab, .tabs-bar-add-tab, .editor-toolbars, .scrollbar) {
+	-webkit-app-region: no-drag;
+}
