@@ -1,0 +1,22 @@
+--- a/src/vs/workbench/contrib/outline/browser/outline.contribution.ts
++++ b/src/vs/workbench/contrib/outline/browser/outline.contribution.ts
+@@ -30,7 +30,7 @@
+ 	ctorDescriptor: new SyncDescriptor(OutlinePane),
+ 	canToggleVisibility: true,
+ 	canMoveView: true,
+-	hideByDefault: false,
++	hideByDefault: true,
+ 	collapsed: true,
+ 	order: 2,
+ 	weight: 30,
+--- a/src/vs/workbench/contrib/timeline/browser/timeline.contribution.ts
++++ b/src/vs/workbench/contrib/timeline/browser/timeline.contribution.ts
+@@ -36,7 +36,7 @@
+ 	readonly weight = 30;
+ 	readonly collapsed = true;
+ 	readonly canToggleVisibility = true;
+-	readonly hideByDefault = false;
++	readonly hideByDefault = true;
+ 	readonly canMoveView = true;
+ 
+ 	focusCommand = { id: 'timeline.focus' };

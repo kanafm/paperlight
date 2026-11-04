@@ -51,6 +51,7 @@ import './browser/parts/editor/editorParts.js';
 import './browser/parts/paneCompositePartService.js';
 import './browser/parts/banner/bannerPart.js';
 import './services/projects/browser/projectNavigationService.js';
+import './contrib/navigation/browser/navigation.contribution.js';
 import './browser/parts/statusbar/statusbarPart.js';
 import './browser/parts/titlebar/menubar.contribution.js';
 

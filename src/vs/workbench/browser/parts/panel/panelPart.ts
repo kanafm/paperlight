@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import './media/panelpart.css';
+import { compactNavigationEnabled, CompactPanelTitle } from '../navigation/paneNavigation.js';
 import { localize } from '../../../../nls.js';
 import { IAction, Separator, SubmenuAction, toAction } from '../../../../base/common/actions.js';
 import { ActionsOrientation } from '../../../../base/browser/ui/actionbar/actionbar.js';
@@ -133,6 +134,10 @@ export class PanelPart extends AbstractPaneCompositePart {
 		}
 	}
 
+	protected override createTitleArea(parent: HTMLElement): HTMLElement | undefined {
+		return compactNavigationEnabled ? this._register(this.instantiationService.createInstance(CompactPanelTitle, parent)).element : super.createTitleArea(parent);
+	}
+
 	protected getCompositeBarOptions(): IPaneCompositeBarOptions {
 		return {
 			partContainerClass: 'panel',
@@ -211,7 +216,7 @@ export class PanelPart extends AbstractPaneCompositePart {
 	}
 
 	protected override shouldShowCompositeBar(): boolean {
-		return true;
+		return !compactNavigationEnabled;
 	}
 
 	protected getCompositeBarPosition(): CompositeBarPosition {

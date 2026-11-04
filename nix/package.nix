@@ -23,6 +23,8 @@ let
   defaults = {
     "chat.disableAIFeatures" = true;
     "chat.copilotCliCommand.enabled" = false;
+    "workbench.activityBar.location" = "hidden";
+    "terminal.integrated.tabs.enabled" = false;
     "workbench.editorAssociations" = {
       "*.{md,mkd,mkdn,mdwn,mdown,markdown,markdn,mdtxt,mdtext,litcoffee,ron,ronn,workbook}" = "vscode.markdown.editor";
     };
@@ -41,7 +43,7 @@ stdenv.mkDerivation {
   pname = "paperlight";
   version = (builtins.fromJSON (builtins.readFile ../package.json)).version;
   inherit src;
-  patches = [ ./product-defaults.patch ./markdown-editor.patch ];
+  patches = [ ./product-defaults.patch ./markdown-editor.patch ./navigation-defaults.patch ];
   nativeBuildInputs = [ tools.node tools.pnpm cctools python3 git pkg-config jq unzip sqlite zstd cacert ];
   buildInputs = [ krb5 ];
   dontFixup = true;
