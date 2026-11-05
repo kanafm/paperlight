@@ -21,6 +21,14 @@ let
     hash = "sha256-L6FkZP2GOFiKZ8f8Fy08S1f73GXf82bhCwsOkHNGKKY=";
   };
   defaults = {
+    "workbench.colorTheme" = "Paperlight Light";
+    "workbench.preferredLightColorTheme" = "Paperlight Light";
+    "workbench.startupEditor" = "welcomePage";
+    "window.restoreWindows" = "none";
+    "workbench.editor.restoreEditors" = false;
+    "terminal.integrated.enablePersistentSessions" = false;
+    "files.hotExit" = "off";
+    "update.showReleaseNotes" = false;
     "chat.disableAIFeatures" = true;
     "chat.copilotCliCommand.enabled" = false;
     "workbench.activityBar.location" = "hidden";

@@ -14,6 +14,12 @@
   "contributes": {
     "themes": [
       {
+        "id": "Paperlight Light",
+        "label": "Paperlight Light",
+        "uiTheme": "vs",
+        "path": "./themes/paperlight_light.json"
+      },
+      {
         "id": "Light 2026",
         "label": "%light2026ThemeLabel%",
         "uiTheme": "vs",

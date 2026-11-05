@@ -108,3 +108,7 @@
 .paperlight-bottom-workbench .part.editor .tabs-and-actions-container :is(.tab, .tabs-bar-add-tab, .editor-toolbars, .scrollbar) {
 	-webkit-app-region: no-drag;
 }
+
+.monaco-workbench.paperlight-bottom-workbench {
+	background-color: var(--vscode-editor-background);
+}

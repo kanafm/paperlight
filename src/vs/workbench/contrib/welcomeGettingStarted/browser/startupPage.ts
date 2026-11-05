@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { projectNavigationEnabled } from '../../../services/projects/common/projectNavigation.js';
 import { URI } from '../../../../base/common/uri.js';
 import { ICommandService } from '../../../../platform/commands/common/commands.js';
 import * as arrays from '../../../../base/common/arrays.js';
@@ -135,7 +136,7 @@ export class StartupPageRunnerContribution extends Disposable implements IWorkbe
 			return;
 		}
 
-		const enabled = isStartupPageEnabled(this.configurationService, this.contextService, this.environmentService);
+		const enabled = isStartupPageEnabled(this.configurationService, this.contextService, this.environmentService) && (!projectNavigationEnabled || this.contextService.getWorkspace().folders.length === 0);
 		if (enabled && this.lifecycleService.startupKind !== StartupKind.ReloadedWindow) {
 
 			// Open the welcome even if we opened a set of default editors

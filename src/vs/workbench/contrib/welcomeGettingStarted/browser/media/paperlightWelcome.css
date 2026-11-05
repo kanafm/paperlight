@@ -1,0 +1,27 @@
+.paperlight-welcome {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: auto;
+	box-sizing: border-box;
+	padding: 32px;
+	background: var(--vscode-editor-background);
+	color: var(--vscode-foreground);
+}
+.paperlight-welcome-content { width: 320px; max-width: 100%; }
+.paperlight-welcome h1 { margin: 0 0 32px; font-size: 28px; font-weight: 600; letter-spacing: -0.5px; }
+.paperlight-welcome button {
+	display: block;
+	width: 100%;
+	padding: 12px 16px;
+	margin: 0 0 8px;
+	border: 1px solid var(--vscode-widget-border);
+	border-radius: var(--vscode-cornerRadius-small);
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+.paperlight-welcome button:hover { background: var(--vscode-list-hoverBackground); }
+.paperlight-welcome button:focus-visible { outline: 1px solid var(--vscode-focusBorder); outline-offset: 2px; }

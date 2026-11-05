@@ -3,6 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { PaperlightWelcome } from './paperlightWelcome.js';
+import { projectNavigationEnabled } from '../../../services/projects/common/projectNavigation.js';
 import { localize, localize2 } from '../../../../nls.js';
 import { GettingStartedInputSerializer, GettingStartedPage, inWelcomeContext } from './gettingStarted.js';
 import { Registry } from '../../../../platform/registry/common/platform.js';
@@ -116,7 +118,7 @@ registerAction2(class extends Action2 {
 Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory).registerEditorSerializer(GettingStartedInput.ID, GettingStartedInputSerializer);
 Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane).registerEditorPane(
 	EditorPaneDescriptor.create(
-		GettingStartedPage,
+		projectNavigationEnabled ? PaperlightWelcome : GettingStartedPage,
 		GettingStartedPage.ID,
 		localize('welcome', "Welcome")
 	),
