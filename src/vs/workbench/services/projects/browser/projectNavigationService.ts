@@ -210,7 +210,7 @@ export class ProjectNavigationService extends Disposable implements IProjectNavi
 
 	async add(uri?: URI): Promise<void> {
 		await this.ready;
-		const selected = uri ? [uri] : await this.dialogs.showOpenDialog({ canSelectFiles: false, canSelectFolders: true, canSelectMany: true, title: localize('addProject', "Add Project"), openLabel: localize('addProjectButton', "Add Project") });
+		const selected = uri ? [uri] : await this.dialogs.showOpenDialog({ availableFileSystems: [Schemas.file], canSelectFiles: false, canSelectFolders: true, canSelectMany: true, title: localize('addProject', "Add Project"), openLabel: localize('addProjectButton', "Add Project") });
 		if (!selected?.length) { return; }
 		await this.queue.queue(async () => {
 			for (const resource of selected) {

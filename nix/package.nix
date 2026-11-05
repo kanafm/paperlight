@@ -1,20 +1,20 @@
 { lib, stdenv, cctools, fetchurl, krb5, nodejs, python3, git, pkg-config, jq, unzip, sqlite, zstd, cacert, tools, src, pnpmDeps, languages, pdf, icon, revision }:
 let
   electron = fetchurl {
-    url = "https://github.com/electron/electron/releases/download/v43.8.3/electron-v43.8.3-darwin-arm64.zip";
-    sha256 = "08e693ae36cfd230105aabe70c626b1a243c13534a529c35a80c1b87cb8da7b4";
+    url = "https://github.com/electron/electron/releases/download/v43.8.6/electron-v43.8.6-darwin-arm64.zip";
+    sha256 = "dd3ef1cf749e11f4426a1b5fb203bff1dbbc8cd589f43c46423ee40a87371390";
   };
   electronHeaders = fetchurl {
-    url = "https://electronjs.org/headers/v43.8.3/node-v43.8.3-headers.tar.gz";
-    sha256 = "d23630d0b98161bec7860dcc482187aca380b1e0da264c1ed5efb42bce79d604";
+    url = "https://electronjs.org/headers/v43.8.6/node-v43.8.6-headers.tar.gz";
+    hash = "sha256-Gr0Mfe47HdCsFS/hBTnZrwKMy9dXme5PfzbSb+O45c4=";
   };
   nodeHeaders = fetchurl {
     url = "https://nodejs.org/dist/v24.22.1/node-v24.22.1-headers.tar.gz";
     sha256 = "322e0a27db9088093ab8347bdc8c7e0aaa21dc9ed548390bf06b394494c09267";
   };
   electronTypes = fetchurl {
-    url = "https://github.com/electron/electron/releases/download/v43.8.3/electron.d.ts";
-    sha256 = "782f47bd6013fa7d0c9640f2ce38b54759ba999ca3f5070711e5cd46e726869d";
+    url = "https://github.com/electron/electron/releases/download/v43.8.6/electron.d.ts";
+    hash = "sha256-/YrqurSiJz0srGWObYp/pZNMxhg3Dk2yPrTT/SR+SIo=";
   };
   ripgrep = fetchurl {
     url = "https://github.com/microsoft/ripgrep-prebuilt/releases/download/v15.0.1/ripgrep-v15.0.1-aarch64-apple-darwin.tar.gz";
@@ -80,23 +80,21 @@ stdenv.mkDerivation {
     export HOME="$TMPDIR/home"
     export XDG_CACHE_HOME="$HOME/.cache"
     export npm_config_devdir="$TMPDIR/node-gyp"
-    export PAPERLIGHT_ELECTRON_ARCHIVE="$TMPDIR/electron-v43.8.3-darwin-arm64.zip"
+    export PAPERLIGHT_ELECTRON_ARCHIVE="$TMPDIR/electron-v43.8.6-darwin-arm64.zip"
     cp ${electron} "$PAPERLIGHT_ELECTRON_ARCHIVE"
-    mkdir -p "$HOME" "$TMPDIR/pnpm-store" "$npm_config_devdir/43.8.3" "$npm_config_devdir/24.22.1"
+    mkdir -p "$HOME" "$TMPDIR/pnpm-store" "$npm_config_devdir/43.8.6" "$npm_config_devdir/24.22.1"
     tar --zstd -xf ${pnpmDeps}/pnpm-store.tar.zst -C "$TMPDIR/pnpm-store"
     chmod -R u+w "$TMPDIR/pnpm-store"
     if test -f "$TMPDIR/pnpm-store/v11/index.db.sql"; then
       sqlite3 "$TMPDIR/pnpm-store/v11/index.db" < "$TMPDIR/pnpm-store/v11/index.db.sql"
     fi
     export pnpm_config_store_dir="$TMPDIR/pnpm-store"
-    tar -xzf ${electronHeaders} --strip-components=1 -C "$npm_config_devdir/43.8.3"
+    tar -xzf ${electronHeaders} --strip-components=1 -C "$npm_config_devdir/43.8.6"
     tar -xzf ${nodeHeaders} --strip-components=1 -C "$npm_config_devdir/24.22.1"
     chmod -R u+w "$npm_config_devdir"
-    cp build/npm/gyp/custom-headers/* "$npm_config_devdir/43.8.3/include/node/"
-    printf '11\n' > "$npm_config_devdir/43.8.3/installVersion"
+    cp build/npm/gyp/custom-headers/* "$npm_config_devdir/43.8.6/include/node/"
+    printf '11\n' > "$npm_config_devdir/43.8.6/installVersion"
     printf '11\n' > "$npm_config_devdir/24.22.1/installVersion"
-    substituteInPlace build/npm/nodeGypHeaders.ts \
-      --replace-fail "['install', '--dist-url'" "['install', '--ensure', '--dist-url'"
     mkdir -p "$TMPDIR/bin"
     ln -s ${nodejs}/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js "$TMPDIR/bin/node-gyp"
     ln -s ${stdenv.cc}/bin/clang "$TMPDIR/bin/gcc"
@@ -112,8 +110,8 @@ stdenv.mkDerivation {
       --replace-fail 'prepareCopilotRipgrepShimTask(platform, arch, destinationFolderName)' '...(process.env.PAPERLIGHT_DISABLE_AI ? [] : [prepareCopilotRipgrepShimTask(platform, arch, destinationFolderName)])'
     git init -q
     pnpm install --offline --frozen-lockfile
-    substituteInPlace node_modules/@vscode/gulp-electron/src/download.js \
-      --replace-fail 'downloadArtifact(downloadOpts)' 'Promise.resolve(process.env.PAPERLIGHT_ELECTRON_ARCHIVE)'
+    substituteInPlace build/lib/electron.ts \
+      --replace-fail 'return fetch(url);' 'return new Response(await fs.promises.readFile(process.env.PAPERLIGHT_ELECTRON_ARCHIVE!));'
     jq --argjson extensions '${builtins.toJSON extensions}' --argjson defaults '${builtins.toJSON defaults}' \
       '.configurationDefaults = $defaults | .useInMemorySecretStorage = true | .builtInExtensions = $extensions | .nameShort = "Paperlight" | .nameLong = "Paperlight" | .applicationName = "paperlight" | .dataFolderName = ".paperlight" | .sharedDataFolderName = ".paperlight-shared" | .darwinBundleIdentifier = "org.paperlight.editor" | .urlProtocol = "paperlight"' \
       product.json > product.json.tmp

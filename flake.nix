@@ -18,9 +18,9 @@
           src = self;
           pnpm = tools.pnpm;
           fetcherVersion = 5;
-          hash = "sha256-KoX98gm220Qw9wiPWWP9uB/g5Lw9Lm3dBDG/PcedWyk=";
+          hash = "sha256-Mb+TjC3CS3W7pP03Wzy/D/hoxKX4utDmCp10JJDGOEg=";
           postInstall = ''
-            for root in build build/rspack build/vite remote remote/web extensions/copilot build/npm/gyp; do
+            for root in build remote remote/web extensions/copilot build/npm/gyp; do
               pnpm --dir "$root" install --ignore-scripts --frozen-lockfile --force
             done
           '';
