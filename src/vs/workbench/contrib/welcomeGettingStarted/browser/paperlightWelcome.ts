@@ -32,6 +32,7 @@ export class PaperlightWelcome extends EditorPane {
 	protected createEditor(parent: HTMLElement): void {
 		const container = this.container = append(parent, $('.paperlight-welcome'));
 		const content = append(container, $('.paperlight-welcome-content'));
+		append(content, $('.paperlight-welcome-icon', { 'aria-hidden': 'true' }));
 		append(content, $('h1', {}, 'Paperlight'));
 		const closer = () => { const input = this.input; return () => input ? this.group.closeEditor(input) : Promise.resolve(true); };
 		const actions = [

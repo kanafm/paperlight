@@ -17,6 +17,8 @@
 		"editorGroupHeader.tabsBackground": "#FFFFFF",
 		"editorGroupHeader.noTabsBackground": "#FFFFFF",
 		"editorPane.background": "#FFFFFF",
+		"tab.activeBorder": "#FFFFFF",
+		"tab.unfocusedActiveBorder": "#FFFFFF",
 		"tab.activeBackground": "#FFFFFF",
 		"tab.unfocusedActiveBackground": "#FFFFFF",
 		"breadcrumb.background": "#FFFFFF",

@@ -21,6 +21,7 @@ let
     hash = "sha256-L6FkZP2GOFiKZ8f8Fy08S1f73GXf82bhCwsOkHNGKKY=";
   };
   defaults = {
+    "editor.minimap.enabled" = false;
     "editor.scrollbar.horizontal" = "hidden";
     "editor.scrollbar.horizontalScrollbarSize" = 0;
     "workbench.colorTheme" = "Paperlight Light";
@@ -126,6 +127,11 @@ stdenv.mkDerivation {
   '';
   buildPhase = ''
     runHook preBuild
+    cp ${icon}/Paperlight.icns resources/darwin/code.icns
+    cp paperlight/icon.svg src/vs/workbench/browser/media/code-icon.svg
+    for variant in light dark hcLight hcDark; do
+      cp paperlight/icon.svg "src/vs/workbench/browser/parts/editor/media/letterpress-$variant.svg"
+    done
     pnpm run gulp vscode-darwin-arm64-min
     runHook postBuild
   '';
@@ -135,7 +141,6 @@ stdenv.mkDerivation {
     cp -R ../VSCode-darwin-arm64/Paperlight.app "$out/Applications/"
     cp -R ${languages} "$out/Applications/Paperlight.app/Contents/Resources/app/extensions/paperlight-languages"
     cp -R ${pdf} "$out/Applications/Paperlight.app/Contents/Resources/app/extensions/paperlight-pdf"
-    cp ${icon}/Paperlight.icns "$out/Applications/Paperlight.app/Contents/Resources/Paperlight.icns"
     /usr/bin/codesign --force --deep --sign - "$out/Applications/Paperlight.app"
     /usr/bin/codesign --verify --deep --strict "$out/Applications/Paperlight.app"
     runHook postInstall

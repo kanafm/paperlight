@@ -9,6 +9,7 @@
 	color: var(--vscode-foreground);
 }
 .paperlight-welcome-content { width: 320px; max-width: 100%; }
+.paperlight-welcome-icon { width: 64px; height: 64px; margin-bottom: 16px; background: url('../../../../browser/media/code-icon.svg') center / contain no-repeat; }
 .paperlight-welcome h1 { margin: 0 0 32px; font-size: 28px; font-weight: 600; letter-spacing: -0.5px; }
 .paperlight-welcome button {
 	display: block;

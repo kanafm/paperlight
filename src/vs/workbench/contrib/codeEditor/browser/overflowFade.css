@@ -2,5 +2,5 @@
 	position: absolute;
 	top: 0;
 	pointer-events: none;
-	background: linear-gradient(to right, transparent, var(--vscode-editor-background));
+	background: linear-gradient(to right, transparent, var(--vscode-editor-background) 75%);
 }
