@@ -1,11 +1,13 @@
 import path from 'node:path';
+import { prepareJava } from './java.ts';
 import { resolveTool, type ProjectEnvironment, type ResolvedTool } from './environment.ts';
 
 export const adapters = [
 	{ id: 'cpp', name: 'C/C++', languages: ['c', 'cpp'], command: 'clangd' },
 	{ id: 'go', name: 'Go', languages: ['go', 'go.mod', 'go.sum'], command: 'gopls' },
 	{ id: 'rust', name: 'Rust', languages: ['rust'], command: 'rust-analyzer' },
-	{ id: 'python', name: 'Python', languages: ['python'], command: 'pyright-langserver' }
+	{ id: 'python', name: 'Python', languages: ['python'], command: 'pyright-langserver' },
+	{ id: 'java', name: 'Java', languages: ['java'], command: 'jdtls' }
 ] as const;
 
 export type Adapter = typeof adapters[number];
@@ -38,6 +40,8 @@ export async function prepareLaunch(adapter: Adapter, environment: ProjectEnviro
 		}
 		launch.args = ['--stdio'];
 		launch.settings = { python: { pythonPath: python.path, analysis: { autoSearchPaths: true, diagnosticMode: 'workspace' } } };
+	} else if (adapter.id === 'java') {
+		await prepareJava(environment, launch);
 	} else if (adapter.id === 'go') {
 		env.GOCACHE ??= path.join(environment.cache, 'go-build');
 		env.GOMODCACHE ??= path.join(environment.cache, 'go-modules');
