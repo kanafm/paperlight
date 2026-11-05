@@ -10,6 +10,7 @@
       tools = pkgs.callPackage ./nix/tools.nix { };
     in {
       packages.${system} = {
+        icon = pkgs.callPackage ./nix/icon.nix { };
         languages = pkgs.callPackage ./nix/languages.nix { inherit tools; };
         pdf = pkgs.callPackage ./nix/pdf.nix { inherit tools; };
         dependencies = pkgs.fetchPnpmDeps {
@@ -29,6 +30,7 @@
           src = self;
           pnpmDeps = self.packages.${system}.dependencies;
           languages = self.packages.${system}.languages;
+          icon = self.packages.${system}.icon;
           pdf = self.packages.${system}.pdf;
           revision = builtins.substring 0 40 (self.rev or self.dirtyRev or "e4c97df79de850b9a719303384c95b39ab61afaa");
         };
