@@ -16,6 +16,9 @@
 		"virtualWorkspaces": false
 	},
 	"contributes": {
+		"languages": [{ "id": "nix", "aliases": ["Nix", "nix"], "extensions": [".nix"], "configuration": "./syntaxes/nix-language.json" }],
+		"grammars": [{ "language": "nix", "scopeName": "source.nix", "path": "./syntaxes/nix.tmLanguage.json" }],
+		"configurationDefaults": { "[nix]": { "editor.insertSpaces": true, "editor.tabSize": 2 } },
 		"views": { "explorer": [{ "id": "paperlight.tools", "name": "Project Tools" }] },
 		"viewsWelcome": [{ "view": "paperlight.tools", "contents": "Open a project folder to use project-specific language tools.", "when": "workspaceFolderCount == 0" }],
 		"commands": [

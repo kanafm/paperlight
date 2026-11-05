@@ -1,5 +1,9 @@
-{ lib, stdenvNoCC, fetchPnpmDeps, sqlite, zstd, tools }:
+{ lib, stdenvNoCC, fetchPnpmDeps, fetchzip, sqlite, zstd, tools }:
 let
+  nixGrammar = fetchzip {
+    url = "https://github.com/nix-community/vscode-nix-ide/archive/065fcba88075f682cdd4db7738f13d2c9e2d5c6a.tar.gz";
+    hash = "sha256-GLVWBO0JrsK4dxZ7F2xeXltAFgBV4bkfiPQcb7EuFHU=";
+  };
   src = lib.fileset.toSource {
     root = ../paperlight/languages;
     fileset = lib.fileset.unions [
@@ -50,7 +54,10 @@ stdenvNoCC.mkDerivation {
   '';
   installPhase = ''
     runHook preInstall
-    mkdir -p "$out/dist"
+    mkdir -p "$out/dist" "$out/syntaxes"
+    cp ${nixGrammar}/dist/nix.tmLanguage.json "$out/syntaxes/"
+    cp ${nixGrammar}/language-configuration.json "$out/syntaxes/nix-language.json"
+    cp ${nixGrammar}/LICENSE "$out/syntaxes/LICENSE"
     cp package.json "$out/"
     cp dist/extension.cjs "$out/dist/"
     cp ${../LICENSE.txt} "$out/LICENSE.txt"
