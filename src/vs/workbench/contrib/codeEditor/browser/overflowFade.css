@@ -1,0 +1,6 @@
+.monaco-editor .paperlight-overflow-fade {
+	position: absolute;
+	top: 0;
+	pointer-events: none;
+	background: linear-gradient(to right, transparent, var(--vscode-editor-background));
+}

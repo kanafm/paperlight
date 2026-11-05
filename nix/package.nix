@@ -21,6 +21,8 @@ let
     hash = "sha256-L6FkZP2GOFiKZ8f8Fy08S1f73GXf82bhCwsOkHNGKKY=";
   };
   defaults = {
+    "editor.scrollbar.horizontal" = "hidden";
+    "editor.scrollbar.horizontalScrollbarSize" = 0;
     "workbench.colorTheme" = "Paperlight Light";
     "workbench.preferredLightColorTheme" = "Paperlight Light";
     "workbench.startupEditor" = "welcomePage";
